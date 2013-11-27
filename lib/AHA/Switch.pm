@@ -1,14 +1,14 @@
 =head1 NAME
 
-AVM::AHA::Switch - Object representing an AHA managed switch/actor
+AHA::Switch - Object representing an AHA managed switch/actor
 
 =head1 SYNOPSIS
     
     # Parent object for doing the HTTP communication
-    my $aha = new AVM::AHA("fritz.box","s!cr!t");
+    my $aha = new AHA("fritz.box","s!cr!t");
  
     # Switch represented by the $ain which can be a name or a real AIN 
-    my $switch = new AVM::AHA::Switch($aha,$ain)
+    my $switch = new AHA::Switch($aha,$ain)
 
     # Obtain all switches from a list operation
     for my $switch (@{$aha->list()}) {
@@ -19,7 +19,7 @@ AVM::AHA::Switch - Object representing an AHA managed switch/actor
 
 This module represents an actor/switch for the AVM home automation system. It
 encapsulated an actor with a certain AIN and provides all methods as described
-in L<"AVM::AHA"> with the difference, that not AIN is required, since this has
+in L<"AHA"> with the difference, that not AIN is required, since this has
 been already provided during the construction of this object.
 
 =head1 METHODS
@@ -28,12 +28,12 @@ been already provided during the construction of this object.
 
 =cut
 
-package AVM::AHA::Switch;
+package AHA::Switch;
 use vars qw{$AUTOLOAD};
 
-=item $switch = new AVM::AHA::Switch($aha,$ain)
+=item $switch = new AHA::Switch($aha,$ain)
 
-Create a new switch object. The first object must be an L<"AVM::AHA"> instance,
+Create a new switch object. The first object must be an L<"AHA"> instance,
 which is responsible for the HTTP communication. The second argument Many must
 be an 8-digit AIN (actor id) or a symbolic name. This symbolic name
 can be configured in the admin UI of the Fritz Box.
@@ -74,7 +74,7 @@ sub ain {
 
 =item $switch->name()
 
-Same as the corresponding method in L<"AVM::AHA"> with the exception, that no
+Same as the corresponding method in L<"AHA"> with the exception, that no
 C<$ain> argument is required since it already has been given during
 construction time
 

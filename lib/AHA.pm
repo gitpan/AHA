@@ -1,6 +1,6 @@
 =head1 NAME
 
-AVM::AHA - Simple access to the AHA interface for AVM based home automation
+AHA - Simple access to the AHA interface for AVM based home automation
 
 =head1 SYNOPSIS
 
@@ -30,13 +30,13 @@ AVM::AHA - Simple access to the AHA interface for AVM based home automation
 =head1 DESCRIPTION 
 
 This module allows programatic access to AVM's Home Automation (AHA) system as
-it is specified in L<AVM HTTP Protocol
+it is specified in L<AVM AHA HTTP Protocol
 specification|http://www.avm.de/de/Extern/files/session_id/AHA-HTTP-Interface.pdf>. 
 
 Please note that this module is not connected to AVM in any way. It's a hobby
 project, without any warranty and no guaranteed support.
 
-Typical it is used to manage and monitor L<AVM::AHA::Switch>es. The following
+Typical it is used to manage and monitor L<AHA::Switch>es. The following
 operations are supported:
 
 =over 4
@@ -69,24 +69,24 @@ is true, if authorization fails.
 
 =cut
 
-package AVM::AHA;
+package AHA;
 
 use strict;
 use LWP::UserAgent;
-use AVM::AHA::Switch;
+use AHA::Switch;
 use Encode;
 use Digest::MD5;
 use Data::Dumper;
 use vars qw($VERSION);
 
-$VERSION = "0.52";
+$VERSION = "0.53";
 
 # Set to one if some debugging should be printed
 my $DEBUG = 0;
 
-=item $aha = new AVM::AHA({host => "fritz.box", password => "s!cr!t", user => "admin"})
+=item $aha = new AHA({host => "fritz.box", password => "s!cr!t", user => "admin"})
 
-=item $aha = new AVM::AHA("fritz.box","s!cr!t","admin")
+=item $aha = new AHA("fritz.box","s!cr!t","admin")
 
 Create a new AHA object for accessing a Fritz Box via the HTTP interface. The
 parameters can be given as a hashref (for named parameters) or in a simple form
@@ -145,7 +145,7 @@ sub new {
 
 =item $switches = $aha->list()
 
-List all switches know to AHA. An arrayref with L<AVM::AHA::Switch> objects is
+List all switches know to AHA. An arrayref with L<AHA::Switch> objects is
 returned, one for each device. When no switch is registered an empty arrayref
 is returned. 
 
@@ -153,7 +153,7 @@ is returned.
 
 sub list {
     my $self = shift;
-    return [ map { new AVM::AHA::Switch($self,$_) }  (split /\*,\*/,$self->_execute_cmd("getswitchlist")) ];
+    return [ map { new AHA::Switch($self,$_) }  (split /\*,\*/,$self->_execute_cmd("getswitchlist")) ];
 }
 
 =item $aha->is_on($ain)
@@ -343,18 +343,18 @@ sub _inval_check {
 
 =head1 LICENSE
 
-AVM::AHA is free software: you can redistribute it and/or modify
+AHA is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
 (at your option) any later version.
 
-AVM::AHA is distributed in the hope that it will be useful,
+AHA is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with AVM::AHA.  If not, see <http://www.gnu.org/licenses/>.
+along with AHA.  If not, see <http://www.gnu.org/licenses/>.
 
 =head1 AUTHOR
 
