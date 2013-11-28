@@ -4,16 +4,16 @@ AHA - Simple access to the AHA interface for AVM based home automation
 
 =head1 SYNOPSIS
 
-    my $aha = new AVM::AHA({host: "fritz.box", password: "s!cr!t"});
+    my $aha = new AHA({host: "fritz.box", password: "s!cr!t"});
 
-    # Get all switches as array ref of AVM::AHA::Switch objects
+    # Get all switches as array ref of AHA::Switch objects
     my $switches = $aha->list();
 
     # For all switches found
     for my $switch (@$switches) {
        say "Name:    ",$switch->name();
        say "State:   ",$switch->is_on();
-       say "Present: ",$switch->is_present()
+       say "Present: ",$switch->is_present();
        say "Energy:  ",$switch->energy();
        say "Power:   ",$switch->power();
 
@@ -79,7 +79,7 @@ use Digest::MD5;
 use Data::Dumper;
 use vars qw($VERSION);
 
-$VERSION = "0.53";
+$VERSION = "0.54";
 
 # Set to one if some debugging should be printed
 my $DEBUG = 0;
@@ -262,7 +262,33 @@ sub ain_by_name {
     return $ain;
 }
 
+=item $aha->logout()
+
+Logout from the connected fritz.box in order to free up any resources. You 
+can still use any other method on this object, in which case it is 
+logs in again (which eats up some performance, of course)
+
+=cut
+
+sub logout {
+    my $self = shift;
+    return unless $self->{sid};
+
+    # Send a post request as defined in 
+    # http://www.avm.de/de/Extern/files/session_id/AVM_Technical_Note_-_Session_ID.pdf
+    my $req = HTTP::Request->new(POST => $self->{login_url});
+    $req->content_type("application/x-www-form-urlencoded");
+    my $login = "sid=".$self->{sid}."&security:command/logout=fcn";
+    $req->content($login);
+    my $resp = $self->{ua}->request($req);
+    die "Cannot logout SID ",$self->{sid},": ",$resp->status_line unless $resp->is_success;
+    print "--- Logout ",$self->{sid} if $DEBUG;
+    delete $self->{sid};
+}
+
 =back 
+
+
 
 =cut
 
@@ -322,7 +348,9 @@ sub _sid {
         die "Cannot login to ", $self->{host}, ": ",$resp->status_line();
     }
     $content = $resp->content();
-    return $self->{sid} = ($content =~ /<SID>(.*?)<\/SID>/ && $1);
+    $self->{sid} = ($content =~ /<SID>(.*?)<\/SID>/ && $1);
+    print "-- Login, received SID ",$self->{sid} if $DEBUG;
+    return $self->{sid};
 }
 
 # Initialize the reverse name -> AIN map
